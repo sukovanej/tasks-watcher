@@ -1,8 +1,17 @@
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
 
 from ..models import Event
 from .repository import Repository
+
+
+BASE_QUERY = """
+    SELECT e.id, e.created_at, e.started_at, e.stopped_at, t.id, t.created_at,
+        t.name, t.description, c.id, c.created_at, c.name
+    FROM events e
+    JOIN tasks t ON t.id = e.task_id
+    JOIN categories c ON c.id = t.category_id
+"""
 
 
 class EventRepository:
@@ -10,12 +19,23 @@ class EventRepository:
         self._repository = repository
 
     def list_all(self) -> List[Event]:
+        self._repository.execute(f"{BASE_QUERY};")
+        return self._repository.fetchall_using_model(Event)
+
+    def get_active(self) -> List[Event]:
         self._repository.execute(
+            f"""
+            {BASE_QUERY}
+            WHERE e.stopped_at is null;
             """
-            SELECT e.created_at, e.started_at, e.stopped_at, t.id, t.created_at, t.name, t.description, c.id, c.created_at, c.name
-            FROM events e
-            JOIN tasks t ON t.id = e.task_id;
-            JOIN categories c ON c.id = t.category_id;
+        )
+        return self._repository.fetch_using_model(Event)
+
+    def list_today(self) -> List[Event]:
+        self._repository.execute(
+            f"""
+            {BASE_QUERY}
+            WHERE date(e.started_at) = date('now', 'localtime');
             """
         )
         return self._repository.fetchall_using_model(Event)
@@ -29,7 +49,7 @@ class EventRepository:
 
     def stop(self) -> None:
         self._repository.execute(
-            "UPDATE events SET stopped_at = ? WHERE stopped_at is NULL RETURNING id;",
+            "UPDATE events SET stopped_at = ? WHERE stopped_at is NULL;",
             (datetime.now(),),
         )
-        self._repository.fetchall()
+        self._repository.commit()

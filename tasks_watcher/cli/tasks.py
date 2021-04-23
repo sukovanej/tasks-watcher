@@ -1,9 +1,9 @@
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 import typer
 
-from .database import category_repository, task_repository
 from .common import complete_category_name, complete_task_name
+from .database import category_repository, task_repository
 
 tasks_app = typer.Typer()
 

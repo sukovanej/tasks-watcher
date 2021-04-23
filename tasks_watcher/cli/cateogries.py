@@ -1,7 +1,7 @@
 import typer
 
-from .database import category_repository
 from .common import complete_category_name
+from .database import category_repository
 
 categories_app = typer.Typer()
 

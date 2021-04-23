@@ -18,8 +18,15 @@ T = TypeVar("T", bound=FromDbQuery)
 
 class Repository:
     def __init__(self, filename: Path) -> None:
-        self._connection = sqlite3.connect(str(filename))
+        self.__filename = filename
+        self.__connection: Optional[sqlite3.Connection] = None
         self.__cursor: Optional[sqlite3.Cursor] = None
+
+    @property
+    def _connection(self) -> sqlite3.Connection:
+        if self.__connection is None:
+            self.__connection = sqlite3.connect(str(self.__filename))
+        return self.__connection
 
     @property
     def cursor(self) -> sqlite3.Cursor:
@@ -66,6 +73,16 @@ class Repository:
     def fetchall_using_model(self, model: Type[T]) -> List[T]:
         rows = self.cursor.fetchall()
         return [model.from_db(v) for v in rows]
+
+    def fetch_using_model(self, model: Type[T]) -> Optional[T]:
+        rows = self.cursor.fetchall()
+
+        if len(rows) == 0:
+            return None
+        elif len(rows) != 1:
+            raise Exception("Returned more then 1 row")
+
+        return model.from_db(rows[0])
 
     def commit(self) -> None:
         self._connection.commit()

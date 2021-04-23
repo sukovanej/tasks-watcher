@@ -2,9 +2,9 @@ from os.path import expanduser
 from pathlib import Path
 
 from ..database.category_repository import CategoryRepository
+from ..database.event_repository import EventRepository
 from ..database.repository import Repository
 from ..database.task_repository import TaskRepository
-from ..database.event_repository import EventRepository
 
 database_path = Path(expanduser("~")) / "tasks_watcher.db"
 
