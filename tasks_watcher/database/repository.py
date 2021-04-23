@@ -1,0 +1,80 @@
+from __future__ import annotations
+
+import sqlite3
+from pathlib import Path
+from typing import Iterable, List, Optional, Protocol, Type, TypeVar
+
+from pydantic import BaseModel
+
+
+class FromDbQuery(Protocol):
+    @classmethod
+    def from_db(cls, row: tuple) -> T:
+        ...
+
+
+T = TypeVar("T", bound=FromDbQuery)
+
+
+class Repository:
+    def __init__(self, filename: Path) -> None:
+        self._connection = sqlite3.connect(str(filename))
+        self.__cursor: Optional[sqlite3.Cursor] = None
+
+    @property
+    def cursor(self) -> sqlite3.Cursor:
+        if self.__cursor is None:
+            raise Exception("cursor not started")
+        return self.__cursor
+
+    def connect(self) -> None:
+        self.__cursor = self._connection.cursor()
+
+    def initialize(self) -> None:
+        self.connect()
+        self.cursor.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS categories (
+                id INTEGER PRIMARY KEY NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                name TEXT NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INTEGER PRIMARY KEY NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                name TEXT NOT NULL,
+                category_id INTEGER NOT NULL,
+                description TEXT,
+
+                FOREIGN KEY(category_id) REFERENCES categories(id)
+            );
+
+            CREATE TABLE IF NOT EXISTS events (
+                id INTEGER PRIMARY KEY NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                started_at TIMESTAMP NOT NULL,
+                stopped_at TIMESTAMP DEFAULT NULL,
+                task_id INTEGER,
+                name TEXT DEFAULT NULL,
+
+                FOREIGN KEY(task_id) REFERENCES tasks(id)
+            );
+            """
+        )
+
+    def fetchall_using_model(self, model: Type[T]) -> List[T]:
+        rows = self.cursor.fetchall()
+        return [model.from_db(v) for v in rows]
+
+    def commit(self) -> None:
+        self._connection.commit()
+
+    def close(self) -> None:
+        self._connection.close()
+
+    def execute(self, sql: str, parameters: Iterable = tuple()) -> None:
+        self.cursor.execute(sql, parameters)
+
+    def fetchall(self) -> list:
+        return self.cursor.fetchall()
