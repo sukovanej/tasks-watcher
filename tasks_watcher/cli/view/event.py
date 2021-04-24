@@ -7,6 +7,7 @@ import typer
 from ...models import Event
 from ...time_diff import time_diff, time_diff_to_str
 from .aligned import print_aligned
+from .task import get_styled_task_name
 
 
 def get_status_str(is_in_progress: bool) -> str:
@@ -52,8 +53,9 @@ def print_report(all_events: Sequence[Event]) -> None:
 
         status_str = get_status_str(is_in_progress)
         time_str = time_diff_to_str(total_time)
+        task_name = get_styled_task_name(events[0].task)
         time_sum += total_time
-        table.append([status_str, events[0].task.name, time_str])
+        table.append([status_str, task_name, time_str])
 
     print_aligned(table)
 
