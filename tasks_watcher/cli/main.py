@@ -6,6 +6,7 @@ from .database import event_repository, repository
 from .tasks import tasks_app
 from .view.aligned import print_aligned
 from .view.event import get_row_from, print_report
+from .view.timeline import timeline
 
 app = typer.Typer()
 app.add_typer(categories_app, name="categories", help="Categories for tasks")
@@ -22,6 +23,7 @@ def init() -> None:
 def start(
     task_id: int = typer.Option("Task", autocompletion=complete_task_name)
 ) -> None:
+    event_repository.stop()
     event_repository.start(task_id)
     typer.echo(f"{task_id} started")
 
@@ -51,7 +53,16 @@ def events() -> None:
 @app.command(help="Show how you're doing today")
 def report() -> None:
     all_events = event_repository.list_today()
+
+    typer.secho("Tasks", bold=True, fg=typer.colors.BRIGHT_CYAN)
+    typer.secho("-" * 30 + "\n", bold=True, fg=typer.colors.BRIGHT_CYAN)
+
     print_report(all_events)
+
+    typer.secho("\nTimeline", bold=True, fg=typer.colors.BRIGHT_CYAN)
+    typer.secho("-" * 30 + "\n", bold=True, fg=typer.colors.BRIGHT_CYAN)
+
+    timeline(all_events)
 
 
 @app.command(help="Print tasks from yesterday")

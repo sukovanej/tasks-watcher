@@ -37,6 +37,41 @@ class TaskRepository:
         )
         return self._repository.fetchall_using_model(Task)
 
-    def delete(self, id: int) -> None:
-        self._repository.execute("DELETE FROM tasks WHERE id = ?;", (id,))
+    def delete(self, task_id: int) -> None:
+        self._repository.execute("DELETE FROM tasks WHERE id = ?;", (task_id,))
+        self._repository.commit()
+
+    def update(
+        self,
+        task_id: int,
+        new_name: Optional[str],
+        new_category_id: Optional[int],
+        new_description: Optional[str],
+    ) -> None:
+        update_name_query, update_category_query, update_description_query = [None] * 3
+
+        if new_name is not None:
+            update_name_query = f"name = ?"
+        elif new_category_id is not None:
+            update_category_query = f"category_id = ?"
+        elif new_description is not None:
+            update_description_query = f"description = ?"
+
+        all_queries = [
+            update_name_query,
+            update_category_query,
+            update_description_query,
+        ]
+
+        if not any(all_queries):
+            raise Exception("Nothing's gonna be updated")
+
+        all_values = [new_name, new_category_id, new_description, task_id]
+
+        update_queries = ", ".join([q for q in all_queries if q is not None])
+        values = [v for v in all_values if v is not None]
+
+        self._repository.execute(
+            f"UPDATE tasks SET {update_queries} WHERE id = ?;", tuple(values)
+        )
         self._repository.commit()
