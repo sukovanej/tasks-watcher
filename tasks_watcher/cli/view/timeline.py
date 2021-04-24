@@ -3,7 +3,7 @@ from typing import Sequence
 
 import typer
 
-from ...models import Project, Event, Task
+from ...models import Event, Project, Task
 
 BREAK_PROJECT = Project(id=-1, created_at=datetime.now(), name="-")
 BREAK_TASK = Task(id=-1, created_at=datetime.now(), name="-", project=BREAK_PROJECT)

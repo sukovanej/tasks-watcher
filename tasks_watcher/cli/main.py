@@ -1,8 +1,8 @@
 import typer
 
-from .projects import projects_app
 from .common import complete_task_name
 from .database import event_repository, repository
+from .projects import projects_app
 from .tasks import tasks_app
 from .view.aligned import print_aligned
 from .view.event import get_row_from, print_report

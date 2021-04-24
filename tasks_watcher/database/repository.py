@@ -4,7 +4,7 @@ import sqlite3
 from pathlib import Path
 from typing import Iterable, List, Optional, Type, TypeVar
 
-from ..models import Project, Event, Task
+from ..models import Event, Project, Task
 
 T = TypeVar("T", Project, Task, Event)
 

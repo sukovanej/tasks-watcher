@@ -1,8 +1,8 @@
 from os.path import expanduser
 from pathlib import Path
 
-from ..database.project_repository import ProjectRepository
 from ..database.event_repository import EventRepository
+from ..database.project_repository import ProjectRepository
 from ..database.repository import Repository
 from ..database.task_repository import TaskRepository
 
