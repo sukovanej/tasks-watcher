@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional, Sequence
 
 from ..models import Task
 from .repository import Repository
@@ -8,7 +8,7 @@ class TaskRepository:
     def __init__(self, repository: Repository) -> None:
         self._repository = repository
 
-    def list_all(self) -> List[Task]:
+    def list_all(self) -> Sequence[Task]:
         self._repository.execute(
             """
             SELECT t.id, t.created_at, t.name, t.description, c.id, c.created_at, c.name
@@ -25,7 +25,7 @@ class TaskRepository:
         )
         self._repository.commit()
 
-    def search_by_name(self, name: str) -> List[Task]:
+    def search_by_name(self, name: str) -> Sequence[Task]:
         self._repository.execute(
             """
             SELECT t.id, t.created_at, t.name, t.description, c.id, c.created_at, c.name FROM tasks t 

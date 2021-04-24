@@ -28,7 +28,7 @@ def start(
 
 @app.command(help="Stop the current task")
 def stop() -> None:
-    stopped_event = event_repository.stop()
+    event_repository.stop()
     typer.echo(f"stopped")
 
 
@@ -67,7 +67,7 @@ def standup() -> None:
         typer.echo("There is nothing from yesterday. Were you even working? :(")
 
 
-def entrypoint():
+def entrypoint() -> None:
     repository.connect()
     app()
 

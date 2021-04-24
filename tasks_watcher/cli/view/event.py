@@ -1,6 +1,6 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import List
+from typing import Sequence
 
 import typer
 
@@ -20,7 +20,7 @@ def get_status_str(event: Event) -> str:
     return f"[{status_str.rjust(11)}]"
 
 
-def get_row_from(event: Event) -> None:
+def get_row_from(event: Event) -> Sequence[str]:
     time_diff_str = time_diff(event.started_at, event.stopped_at or datetime.now())
     time_diff_str = typer.style(time_diff_str, fg=typer.colors.YELLOW, bold=True)
     status_str = get_status_str(event)
@@ -34,7 +34,7 @@ def get_row_from(event: Event) -> None:
     return [status_str, event.task.name, time_str]
 
 
-def print_report(events: List[Event]) -> None:
+def print_report(events: Sequence[Event]) -> None:
     events_per_task = defaultdict(list)
 
     for event in events:

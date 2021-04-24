@@ -1,8 +1,8 @@
-from typing import List
+from typing import Sequence
 
 import typer
 
-Table = List[List[str]]
+Table = Sequence[Sequence[str]]
 
 
 def print_aligned(table: Table) -> None:

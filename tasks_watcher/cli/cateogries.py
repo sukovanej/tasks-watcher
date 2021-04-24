@@ -15,11 +15,11 @@ def list():
 
 @categories_app.command(help="Add a new task category")
 def add(name: str):
-    categories = category_repository.add(name)
+    category_repository.add(name)
     typer.echo(f"{name} added to categories")
 
 
 @categories_app.command(help="Delete a category")
 def delete(id: int = typer.Option("Task", autocompletion=complete_category_name)):
-    categories = category_repository.delete(id)
+    category_repository.delete(id)
     typer.echo(f"Done")

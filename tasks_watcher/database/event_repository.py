@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional, Sequence
 
 from ..models import Event
 from .repository import Repository
@@ -17,11 +17,11 @@ class EventRepository:
     def __init__(self, repository: Repository) -> None:
         self._repository = repository
 
-    def list_all(self) -> List[Event]:
+    def list_all(self) -> Sequence[Event]:
         self._repository.execute(f"{BASE_QUERY};")
         return self._repository.fetchall_using_model(Event)
 
-    def get_active(self) -> List[Event]:
+    def get_active(self) -> Optional[Event]:
         self._repository.execute(
             f"""
             {BASE_QUERY}
@@ -30,7 +30,7 @@ class EventRepository:
         )
         return self._repository.fetch_using_model(Event)
 
-    def list_today(self) -> List[Event]:
+    def list_today(self) -> Sequence[Event]:
         self._repository.execute(
             f"""
             {BASE_QUERY}
@@ -39,7 +39,7 @@ class EventRepository:
         )
         return self._repository.fetchall_using_model(Event)
 
-    def list_yesterday(self) -> List[Event]:
+    def list_yesterday(self) -> Sequence[Event]:
         self._repository.execute(
             f"""
             {BASE_QUERY}

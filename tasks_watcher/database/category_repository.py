@@ -1,4 +1,4 @@
-from typing import List
+from typing import Sequence
 
 from ..models import Category
 from .repository import Repository
@@ -8,7 +8,7 @@ class CategoryRepository:
     def __init__(self, repository: Repository) -> None:
         self._repository = repository
 
-    def list_all(self) -> List[Category]:
+    def list_all(self) -> Sequence[Category]:
         self._repository.execute("SELECT * FROM categories;")
         return self._repository.fetchall_using_model(Category)
 
@@ -20,7 +20,7 @@ class CategoryRepository:
         self._repository.execute("DELETE FROM categories WHERE id = ?;", (id,))
         self._repository.commit()
 
-    def search_by_name(self, name: str) -> List[Category]:
+    def search_by_name(self, name: str) -> Sequence[Category]:
         self._repository.execute(
             "SELECT * FROM categories WHERE INSTR(name, ?) > 0", (name,)
         )

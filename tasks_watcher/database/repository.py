@@ -2,18 +2,13 @@ from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
-from typing import Iterable, List, Optional, Protocol, Type, TypeVar
+from typing import Iterable, List, Optional, Protocol, Sequence, Type, TypeVar
 
 from pydantic import BaseModel
 
+from ..models import Category, Task, Event
 
-class FromDbQuery(Protocol):
-    @classmethod
-    def from_db(cls, row: tuple) -> T:
-        ...
-
-
-T = TypeVar("T", bound=FromDbQuery)
+T = TypeVar("T", Category, Task, Event)
 
 
 class Repository:

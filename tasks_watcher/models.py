@@ -43,7 +43,7 @@ class Event(BaseModel):
     task: Task
 
     @classmethod
-    def from_db(cls, row: tuple) -> Task:
+    def from_db(cls, row: tuple) -> Event:
         return cls(
             id=row[0],
             created_at=row[1],
