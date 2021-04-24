@@ -1,9 +1,10 @@
 import typer
 
-from .common import complete_task_name, task_repository
+from .common import (complete_task_name, complete_unfinished_task_name,
+                     task_repository)
 from .database import event_repository, repository
 from .projects import projects_app
-from .tasks import TASK_NAME_TYPER_OPTION, tasks_app
+from .tasks import tasks_app
 from .view.aligned import print_aligned
 from .view.event import get_row_from, print_report
 from .view.timeline import timeline
@@ -92,7 +93,11 @@ def standup() -> None:
 
 
 @app.command(help="Finish a task")
-def finish(task: str = TASK_NAME_TYPER_OPTION):
+def finish(
+    task: str = typer.Option(
+        ..., autocompletion=complete_unfinished_task_name, help="Task name"
+    )
+):
     tasks = task_repository.search_by_name(task)
 
     if len(tasks) > 1:

@@ -22,6 +22,10 @@ class TaskRepository:
         self._repository.execute(f"{BASE_QUERY};")
         return self._repository.fetchall_using_model(Task)
 
+    def list_all_unfinished(self) -> Sequence[Task]:
+        self._repository.execute(f"{BASE_QUERY} WHERE t.finished_at is NULL;")
+        return self._repository.fetchall_using_model(Task)
+
     def add(self, name: str, project_id: int, description: Optional[str]) -> None:
         self._repository.execute(
             "INSERT INTO tasks (name, project_id, description) VALUES (?, ?, ?);",
@@ -31,6 +35,13 @@ class TaskRepository:
 
     def search_by_name(self, name: str) -> Sequence[Task]:
         self._repository.execute(f"{BASE_QUERY} WHERE INSTR(t.name, ?) > 0;", (name,))
+        return self._repository.fetchall_using_model(Task)
+
+    def search_by_name_unfinished(self, name: str) -> Sequence[Task]:
+        self._repository.execute(
+            f"{BASE_QUERY} WHERE INSTR(t.name, ?) > 0 AND t.finished_at is NULL;",
+            (name,),
+        )
         return self._repository.fetchall_using_model(Task)
 
     def delete(self, task_id: int) -> None:
