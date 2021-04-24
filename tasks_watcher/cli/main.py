@@ -58,7 +58,8 @@ def report() -> None:
 def standup() -> None:
     yesterday_events = event_repository.list_yesterday()
     task_names = {
-        typer.style(e.task.name, fg=typer.colors.YELLOW, bold=True) for e in yesterday_events
+        typer.style(e.task.name, fg=typer.colors.YELLOW, bold=True)
+        for e in yesterday_events
     }
     if task_names:
         tasks_str = ", ".join(sorted(task_names))
