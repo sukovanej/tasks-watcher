@@ -48,7 +48,6 @@ class EventRepository:
         )
         return self._repository.fetchall_using_model(Event)
 
-
     def start(self, task_id: int) -> None:
         self._repository.execute(
             "INSERT INTO events (task_id, started_at) VALUES (?, ?);",
