@@ -4,22 +4,31 @@ import typer
 
 from .common import complete_category_name, complete_task_name
 from .database import category_repository, task_repository
+from .view.task import print_tasks
 
 tasks_app = typer.Typer()
+
+
+CATEGORY_NAME_TYPER_OPTION = typer.Option(
+    ..., autocompletion=complete_category_name, help="Category name"
+)
+TASK_NAME_TYPER_OPTION = typer.Option(
+    ..., autocompletion=complete_task_name, help="Task name"
+)
+DESCRIPTION_TYPER_OPTION = typer.Option(None, help="Task description")
 
 
 @tasks_app.command(help="List all the tasks")
 def list():
     tasks = task_repository.list_all()
-    for task in tasks:
-        typer.echo(f"[{task.id}] {task.name}")
+    print_tasks(tasks)
 
 
 @tasks_app.command(help="Add a new task")
 def add(
     name: str,
-    category: str = typer.Option("Category", autocompletion=complete_category_name),
-    description: Optional[str] = None,
+    category: str = CATEGORY_NAME_TYPER_OPTION,
+    description: Optional[str] = DESCRIPTION_TYPER_OPTION,
 ) -> None:
     categories = category_repository.search_by_name(category)
 
@@ -37,14 +46,12 @@ def add(
     typer.echo(f"{name} added")
 
 
-@tasks_app.command(help="Update a new task")
+@tasks_app.command(help="Update an existing task")
 def update(
-    name: str = typer.Option(..., autocompletion=complete_task_name),
+    name: str = TASK_NAME_TYPER_OPTION,
     new_name: Optional[str] = None,
-    new_category: Optional[str] = typer.Option(
-        "Category", autocompletion=complete_category_name
-    ),
-    new_description: Optional[str] = None,
+    new_category: Optional[str] = CATEGORY_NAME_TYPER_OPTION,
+    new_description: Optional[str] = DESCRIPTION_TYPER_OPTION,
 ) -> None:
     new_category_id = None
 
@@ -80,7 +87,7 @@ def update(
 
 
 @tasks_app.command(help="Delete a task")
-def delete(task: str = typer.Option("Task", autocompletion=complete_task_name)):
+def delete(task: str = TASK_NAME_TYPER_OPTION):
     tasks = task_repository.search_by_name(task)
 
     if len(tasks) > 1:

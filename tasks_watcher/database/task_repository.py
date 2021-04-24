@@ -51,11 +51,11 @@ class TaskRepository:
         update_name_query, update_category_query, update_description_query = [None] * 3
 
         if new_name is not None:
-            update_name_query = f"name = ?"
+            update_name_query = "name = ?"
         elif new_category_id is not None:
-            update_category_query = f"category_id = ?"
+            update_category_query = "category_id = ?"
         elif new_description is not None:
-            update_description_query = f"description = ?"
+            update_description_query = "description = ?"
 
         all_queries = [
             update_name_query,
