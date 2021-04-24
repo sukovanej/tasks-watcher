@@ -1,7 +1,7 @@
 from os.path import expanduser
 from pathlib import Path
 
-from ..database.category_repository import CategoryRepository
+from ..database.project_repository import ProjectRepository
 from ..database.event_repository import EventRepository
 from ..database.repository import Repository
 from ..database.task_repository import TaskRepository
@@ -9,6 +9,6 @@ from ..database.task_repository import TaskRepository
 database_path = Path(expanduser("~")) / "tasks_watcher.db"
 
 repository = Repository(database_path)
-category_repository = CategoryRepository(repository)
+project_repository = ProjectRepository(repository)
 task_repository = TaskRepository(repository)
 event_repository = EventRepository(repository)

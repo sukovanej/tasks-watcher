@@ -13,15 +13,15 @@ class TaskRepository:
             """
             SELECT t.id, t.created_at, t.name, t.description, c.id, c.created_at, c.name
             FROM tasks t
-            JOIN categories c ON c.id = t.category_id;
+            JOIN projects c ON c.id = t.project_id;
             """
         )
         return self._repository.fetchall_using_model(Task)
 
-    def add(self, name: str, category_id: int, description: Optional[str]) -> None:
+    def add(self, name: str, project_id: int, description: Optional[str]) -> None:
         self._repository.execute(
-            "INSERT INTO tasks (name, category_id, description) VALUES (?, ?, ?);",
-            (name, category_id, description),
+            "INSERT INTO tasks (name, project_id, description) VALUES (?, ?, ?);",
+            (name, project_id, description),
         )
         self._repository.commit()
 
@@ -30,7 +30,7 @@ class TaskRepository:
             """
             SELECT t.id, t.created_at, t.name, t.description, c.id, c.created_at,
                 c.name FROM tasks t
-            JOIN categories c
+            JOIN projects c
             WHERE INSTR(t.name, ?) > 0
             """,
             (name,),
@@ -45,28 +45,28 @@ class TaskRepository:
         self,
         task_id: int,
         new_name: Optional[str],
-        new_category_id: Optional[int],
+        new_project_id: Optional[int],
         new_description: Optional[str],
     ) -> None:
-        update_name_query, update_category_query, update_description_query = [None] * 3
+        update_name_query, update_project_query, update_description_query = [None] * 3
 
         if new_name is not None:
             update_name_query = "name = ?"
-        elif new_category_id is not None:
-            update_category_query = "category_id = ?"
+        elif new_project_id is not None:
+            update_project_query = "project_id = ?"
         elif new_description is not None:
             update_description_query = "description = ?"
 
         all_queries = [
             update_name_query,
-            update_category_query,
+            update_project_query,
             update_description_query,
         ]
 
         if not any(all_queries):
             raise Exception("Nothing's gonna be updated")
 
-        all_values = [new_name, new_category_id, new_description, task_id]
+        all_values = [new_name, new_project_id, new_description, task_id]
 
         update_queries = ", ".join([q for q in all_queries if q is not None])
         values = [v for v in all_values if v is not None]

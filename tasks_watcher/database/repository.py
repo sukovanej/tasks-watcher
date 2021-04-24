@@ -4,9 +4,9 @@ import sqlite3
 from pathlib import Path
 from typing import Iterable, List, Optional, Type, TypeVar
 
-from ..models import Category, Event, Task
+from ..models import Project, Event, Task
 
-T = TypeVar("T", Category, Task, Event)
+T = TypeVar("T", Project, Task, Event)
 
 
 class Repository:
@@ -34,7 +34,7 @@ class Repository:
         self.connect()
         self.cursor.executescript(
             """
-            CREATE TABLE IF NOT EXISTS categories (
+            CREATE TABLE IF NOT EXISTS projects (
                 id INTEGER PRIMARY KEY NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
                 name TEXT NOT NULL
@@ -44,10 +44,10 @@ class Repository:
                 id INTEGER PRIMARY KEY NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
                 name TEXT NOT NULL,
-                category_id INTEGER NOT NULL,
+                project_id INTEGER NOT NULL,
                 description TEXT,
 
-                FOREIGN KEY(category_id) REFERENCES categories(id)
+                FOREIGN KEY(project_id) REFERENCES projects(id)
             );
 
             CREATE TABLE IF NOT EXISTS events (

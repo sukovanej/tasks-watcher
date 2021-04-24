@@ -3,10 +3,10 @@ from typing import Sequence
 
 import typer
 
-from ...models import Category, Event, Task
+from ...models import Project, Event, Task
 
-BREAK_CATEGORY = Category(id=-1, created_at=datetime.now(), name="-")
-BREAK_TASK = Task(id=-1, created_at=datetime.now(), name="-", category=BREAK_CATEGORY)
+BREAK_PROJECT = Project(id=-1, created_at=datetime.now(), name="-")
+BREAK_TASK = Task(id=-1, created_at=datetime.now(), name="-", project=BREAK_PROJECT)
 
 
 def create_empty_event(started_at: datetime, stopped_at: datetime) -> Event:
@@ -57,7 +57,7 @@ def timeline(events: Sequence[Event]) -> None:
         time_str = get_time_range_str(event).ljust(14)
         color = typer.colors.WHITE
 
-        if event.task is not BREAK_TASK:
+        if event.task != BREAK_TASK:
             color = typer.colors.YELLOW
 
         task_str = typer.style(event.task.name, fg=color)

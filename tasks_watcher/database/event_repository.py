@@ -9,7 +9,7 @@ BASE_QUERY = """
         t.name, t.description, c.id, c.created_at, c.name
     FROM events e
     JOIN tasks t ON t.id = e.task_id
-    JOIN categories c ON c.id = t.category_id
+    JOIN projects c ON c.id = t.project_id
 """
 
 

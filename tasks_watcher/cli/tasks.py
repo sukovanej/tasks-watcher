@@ -2,15 +2,15 @@ from typing import Optional
 
 import typer
 
-from .common import complete_category_name, complete_task_name
-from .database import category_repository, task_repository
+from .common import complete_project_name, complete_task_name
+from .database import project_repository, task_repository
 from .view.task import print_tasks
 
 tasks_app = typer.Typer()
 
 
-CATEGORY_NAME_TYPER_OPTION = typer.Option(
-    ..., autocompletion=complete_category_name, help="Category name"
+PROJECT_NAME_TYPER_OPTION = typer.Option(
+    ..., autocompletion=complete_project_name, help="Project name"
 )
 TASK_NAME_TYPER_OPTION = typer.Option(
     ..., autocompletion=complete_task_name, help="Task name"
@@ -27,22 +27,22 @@ def list():
 @tasks_app.command(help="Add a new task")
 def add(
     name: str,
-    category: str = CATEGORY_NAME_TYPER_OPTION,
+    project: str = PROJECT_NAME_TYPER_OPTION,
     description: Optional[str] = DESCRIPTION_TYPER_OPTION,
 ) -> None:
-    categories = category_repository.search_by_name(category)
+    projects = project_repository.search_by_name(project)
 
-    if len(categories) > 1:
-        typer.echo("There are multiple such categories:")
-        for category_sql in categories:
-            typer.echo(f" - {category_sql.name}")
+    if len(projects) > 1:
+        typer.echo("There are multiple such projects:")
+        for project_sql in projects:
+            typer.echo(f" - {project_sql.name}")
 
         typer.Exit()
-    elif len(categories) == 0:
+    elif len(projects) == 0:
         typer.echo("No task found")
         typer.Exit()
 
-    task_repository.add(name, categories[0].id, description)
+    task_repository.add(name, projects[0].id, description)
     typer.echo(f"{name} added")
 
 
@@ -50,25 +50,25 @@ def add(
 def update(
     name: str = TASK_NAME_TYPER_OPTION,
     new_name: Optional[str] = None,
-    new_category: Optional[str] = CATEGORY_NAME_TYPER_OPTION,
+    new_project: Optional[str] = PROJECT_NAME_TYPER_OPTION,
     new_description: Optional[str] = DESCRIPTION_TYPER_OPTION,
 ) -> None:
-    new_category_id = None
+    new_project_id = None
 
-    if new_category is not None:
-        categories = category_repository.search_by_name(new_category)
+    if new_project is not None:
+        projects = project_repository.search_by_name(new_project)
 
-        if len(categories) > 1:
+        if len(projects) > 1:
             typer.echo("There are multiple such ategories:")
-            for category_sql in categories:
-                typer.echo(f" - {category_sql.name}")
+            for project_sql in projects:
+                typer.echo(f" - {project_sql.name}")
 
             typer.Exit()
-        elif len(categories) == 0:
+        elif len(projects) == 0:
             typer.echo("No task found")
             typer.Exit()
         else:
-            new_category_id = categories[0].id
+            new_project_id = projects[0].id
 
     tasks = task_repository.search_by_name(name)
 
@@ -82,7 +82,7 @@ def update(
         typer.echo("No task found")
         typer.Exit(1)
 
-    task_repository.update(tasks[0].id, new_name, new_category_id, new_description)
+    task_repository.update(tasks[0].id, new_name, new_project_id, new_description)
     typer.echo(f"{name} added")
 
 

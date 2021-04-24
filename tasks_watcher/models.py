@@ -6,13 +6,13 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class Category(BaseModel):
+class Project(BaseModel):
     id: int
     created_at: datetime
     name: str
 
     @classmethod
-    def from_db(cls, row: tuple) -> Category:
+    def from_db(cls, row: tuple) -> Project:
         return cls(id=row[0], created_at=row[1], name=row[2])
 
 
@@ -20,7 +20,7 @@ class Task(BaseModel):
     id: int
     created_at: datetime
     name: str
-    category: Category
+    project: Project
     description: Optional[str] = None
 
     @classmethod
@@ -30,7 +30,7 @@ class Task(BaseModel):
             created_at=row[1],
             name=row[2],
             description=row[3],
-            category=Category.from_db(row[4:]),
+            project=Project.from_db(row[4:]),
         )
 
 

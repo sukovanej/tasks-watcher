@@ -1,6 +1,6 @@
 import typer
 
-from .cateogries import categories_app
+from .projects import projects_app
 from .common import complete_task_name
 from .database import event_repository, repository
 from .tasks import tasks_app
@@ -9,7 +9,7 @@ from .view.event import get_row_from, print_report
 from .view.timeline import timeline
 
 app = typer.Typer()
-app.add_typer(categories_app, name="categories", help="Categories for tasks")
+app.add_typer(projects_app, name="projects", help="Projects for tasks")
 app.add_typer(tasks_app, name="tasks", help="Tasks you are working on")
 
 
