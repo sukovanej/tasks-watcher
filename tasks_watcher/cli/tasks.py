@@ -8,14 +8,14 @@ from .database import category_repository, task_repository
 tasks_app = typer.Typer()
 
 
-@tasks_app.command()
+@tasks_app.command(help="List all the tasks")
 def list():
     tasks = task_repository.list_all()
     for task in tasks:
         typer.echo(f"[{task.id}] {task.name}")
 
 
-@tasks_app.command()
+@tasks_app.command(help="Add a new task")
 def add(
     name: str,
     category: int = typer.Option("Category", autocompletion=complete_category_name),
@@ -25,7 +25,7 @@ def add(
     typer.echo(f"{name} added")
 
 
-@tasks_app.command()
+@tasks_app.command(help="Delete a task")
 def delete(id: int = typer.Option("Task", autocompletion=complete_task_name)):
     task_repository.delete(id)
     typer.echo(f"Done")

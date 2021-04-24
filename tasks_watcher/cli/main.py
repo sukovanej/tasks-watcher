@@ -13,8 +13,8 @@ from .database import event_repository, repository
 from .tasks import tasks_app
 
 app = typer.Typer()
-app.add_typer(categories_app, name="categories")
-app.add_typer(tasks_app, name="tasks")
+app.add_typer(categories_app, name="categories", help="Categories for tasks")
+app.add_typer(tasks_app, name="tasks", help="Tasks you are working on")
 
 
 def get_status_str(event: Event) -> str:
@@ -63,13 +63,13 @@ def print_report(events: List[Event]) -> None:
     print_aligned(table)
 
 
-@app.command()
+@app.command(help="Initialize the database")
 def init() -> None:
     repository.initialize()
     typer.echo(f"database initialized")
 
 
-@app.command()
+@app.command(help="Start working on a task")
 def start(
     task_id: int = typer.Option("Task", autocompletion=complete_task_name)
 ) -> None:
@@ -77,13 +77,13 @@ def start(
     typer.echo(f"{task_id} started")
 
 
-@app.command()
+@app.command(help="Stop the current task")
 def stop() -> None:
     stopped_event = event_repository.stop()
     typer.echo(f"stopped")
 
 
-@app.command()
+@app.command(help="Show what you're doing right now")
 def show() -> None:
     active_event = event_repository.get_active()
     if active_event is None:
@@ -92,16 +92,22 @@ def show() -> None:
         typer.echo(" ".join(get_row_from(active_event)))
 
 
-@app.command()
+@app.command(help="Get all the recorded events")
 def events() -> None:
     events = event_repository.list_all()
     table = [get_row_from(e) for e in events]
     print_aligned(table)
 
 
-@app.command()
+@app.command(help="Show how you're doing today")
 def report() -> None:
     events = event_repository.list_today()
+    print_report(events)
+
+
+@app.command(help="Print tasks from yesterday")
+def standup() -> None:
+    events = event_repository.list_yesterday()
     print_report(events)
 
 

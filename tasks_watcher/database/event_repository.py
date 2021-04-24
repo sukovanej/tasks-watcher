@@ -39,6 +39,16 @@ class EventRepository:
         )
         return self._repository.fetchall_using_model(Event)
 
+    def list_yesterday(self) -> List[Event]:
+        self._repository.execute(
+            f"""
+            {BASE_QUERY}
+            WHERE date(e.started_at) = date('now', '-1 day', 'localtime');
+            """
+        )
+        return self._repository.fetchall_using_model(Event)
+
+
     def start(self, task_id: int) -> None:
         self._repository.execute(
             "INSERT INTO events (task_id, started_at) VALUES (?, ?);",
