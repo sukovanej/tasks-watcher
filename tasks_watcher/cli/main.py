@@ -1,6 +1,6 @@
 import typer
 
-from .common import complete_task_name
+from .common import complete_task_name, task_repository
 from .database import event_repository, repository
 from .projects import projects_app
 from .tasks import tasks_app
@@ -21,11 +21,25 @@ def init() -> None:
 
 @app.command(help="Start working on a task")
 def start(
-    task_id: int = typer.Option("Task", autocompletion=complete_task_name)
+    task: str = typer.Option("Task", autocompletion=complete_task_name)
 ) -> None:
+    tasks = task_repository.search_by_name(task)
+
+    if len(tasks) > 1:
+        typer.echo("There are multiple such tasks:")
+        for task_sql in tasks:
+            typer.echo(f" - {task_sql.name}")
+
+        typer.Exit()
+    elif len(tasks) == 0:
+        typer.echo("No task found")
+        typer.Exit()
+
     event_repository.stop()
-    event_repository.start(task_id)
-    typer.echo(f"{task_id} started")
+    event_repository.start(tasks[0].id)
+
+    task_str = typer.style(tasks[0].name, fg=typer.colors.YELLOW)
+    typer.echo(f"Task {task_str} started!")
 
 
 @app.command(help="Stop the current task")

@@ -4,18 +4,19 @@ from ..models import Task
 from .repository import Repository
 
 
+BASE_QUERY = """
+    SELECT t.id, t.created_at, t.name, t.description, c.id, c.created_at, c.name
+    FROM tasks t
+    JOIN projects c ON c.id = t.project_id
+"""
+
+
 class TaskRepository:
     def __init__(self, repository: Repository) -> None:
         self._repository = repository
 
     def list_all(self) -> Sequence[Task]:
-        self._repository.execute(
-            """
-            SELECT t.id, t.created_at, t.name, t.description, c.id, c.created_at, c.name
-            FROM tasks t
-            JOIN projects c ON c.id = t.project_id;
-            """
-        )
+        self._repository.execute("{BASE_QUERY};")
         return self._repository.fetchall_using_model(Task)
 
     def add(self, name: str, project_id: int, description: Optional[str]) -> None:
@@ -27,10 +28,8 @@ class TaskRepository:
 
     def search_by_name(self, name: str) -> Sequence[Task]:
         self._repository.execute(
-            """
-            SELECT t.id, t.created_at, t.name, t.description, c.id, c.created_at,
-                c.name FROM tasks t
-            JOIN projects c
+            f"""
+            {BASE_QUERY}
             WHERE INSTR(t.name, ?) > 0
             """,
             (name,),
