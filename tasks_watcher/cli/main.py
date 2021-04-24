@@ -20,9 +20,7 @@ def init() -> None:
 
 
 @app.command(help="Start working on a task")
-def start(
-    task: str = typer.Option("Task", autocompletion=complete_task_name)
-) -> None:
+def start(task: str = typer.Option("Task", autocompletion=complete_task_name)) -> None:
     tasks = task_repository.search_by_name(task)
 
     if len(tasks) > 1:

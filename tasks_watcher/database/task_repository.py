@@ -3,7 +3,6 @@ from typing import Optional, Sequence
 from ..models import Task
 from .repository import Repository
 
-
 BASE_QUERY = """
     SELECT t.id, t.created_at, t.name, t.description, c.id, c.created_at, c.name
     FROM tasks t
