@@ -16,7 +16,7 @@ class TaskRepository:
         self._repository = repository
 
     def list_all(self) -> Sequence[Task]:
-        self._repository.execute("{BASE_QUERY};")
+        self._repository.execute(f"{BASE_QUERY};")
         return self._repository.fetchall_using_model(Task)
 
     def add(self, name: str, project_id: int, description: Optional[str]) -> None:
