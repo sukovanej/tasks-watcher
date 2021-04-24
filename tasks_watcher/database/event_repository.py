@@ -2,14 +2,17 @@ from datetime import datetime
 from typing import Optional, Sequence
 
 from ..models import Event
+from .project_repository import ALL_PROJECT_COLUMNS
 from .repository import Repository
+from .task_repository import ALL_TASK_COLUMNS
 
-BASE_QUERY = """
-    SELECT e.id, e.created_at, e.started_at, e.stopped_at, t.id, t.created_at,
-        t.name, t.description, c.id, c.created_at, c.name
+ALL_EVENT_COLUMNS = "e.id, e.created_at, e.started_at, e.stopped_at"
+
+BASE_QUERY = f"""
+    SELECT {ALL_EVENT_COLUMNS}, {ALL_TASK_COLUMNS}, {ALL_PROJECT_COLUMNS}
     FROM events e
     JOIN tasks t ON t.id = e.task_id
-    JOIN projects c ON c.id = t.project_id
+    JOIN projects p ON p.id = t.project_id
 """
 
 

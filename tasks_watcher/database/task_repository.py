@@ -1,12 +1,15 @@
 from typing import Optional, Sequence
 
 from ..models import Task
+from .project_repository import ALL_PROJECT_COLUMNS
 from .repository import Repository
 
-BASE_QUERY = """
-    SELECT t.id, t.created_at, t.name, t.description, c.id, c.created_at, c.name
+ALL_TASK_COLUMNS = "t.id, t.created_at, t.name, t.description, t.finished_at"
+
+BASE_QUERY = f"""
+    SELECT {ALL_TASK_COLUMNS}, {ALL_PROJECT_COLUMNS}
     FROM tasks t
-    JOIN projects c ON c.id = t.project_id
+    JOIN projects p ON p.id = t.project_id
 """
 
 

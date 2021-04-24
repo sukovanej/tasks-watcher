@@ -22,6 +22,7 @@ class Task(BaseModel):
     name: str
     project: Project
     description: Optional[str] = None
+    finished_at: Optional[datetime]
 
     @classmethod
     def from_db(cls, row: tuple) -> Task:
@@ -30,7 +31,8 @@ class Task(BaseModel):
             created_at=row[1],
             name=row[2],
             description=row[3],
-            project=Project.from_db(row[4:]),
+            finished_at=row[4],
+            project=Project.from_db(row[5:]),
         )
 
 

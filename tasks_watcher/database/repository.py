@@ -4,7 +4,10 @@ import sqlite3
 from pathlib import Path
 from typing import Iterable, List, Optional, Type, TypeVar
 
+import typer
+
 from ..models import Event, Project, Task
+from .migrations import MIGRATIONS
 
 T = TypeVar("T", Project, Task, Event)
 
@@ -32,36 +35,19 @@ class Repository:
 
     def initialize(self) -> None:
         self.connect()
-        self.cursor.executescript(
-            """
-            CREATE TABLE IF NOT EXISTS projects (
-                id INTEGER PRIMARY KEY NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-                name TEXT NOT NULL
-            );
+        self.cursor.execute("PRAGMA user_version;")
+        current_version = self.cursor.fetchone()[0]
+        typer.echo(f"Current migration: {current_version}")
 
-            CREATE TABLE IF NOT EXISTS tasks (
-                id INTEGER PRIMARY KEY NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-                name TEXT NOT NULL,
-                project_id INTEGER NOT NULL,
-                description TEXT,
-
-                FOREIGN KEY(project_id) REFERENCES projects(id)
-            );
-
-            CREATE TABLE IF NOT EXISTS events (
-                id INTEGER PRIMARY KEY NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-                started_at TIMESTAMP NOT NULL,
-                stopped_at TIMESTAMP DEFAULT NULL,
-                task_id INTEGER,
-                name TEXT DEFAULT NULL,
-
-                FOREIGN KEY(task_id) REFERENCES tasks(id)
-            );
-            """
-        )
+        for migration in MIGRATIONS:
+            if migration.version <= current_version:
+                typer.echo(
+                    f"[{migration.version}] up-to-date, skpping - {migration.description}"
+                )
+            else:
+                typer.echo(f"[{migration.version}] applying - {migration.description}")
+                self.cursor.executescript(migration.sql)
+                self.cursor.execute("PRAGMA user_version = ?;", (migration.version,))
 
     def fetchall_using_model(self, model: Type[T]) -> List[T]:
         rows = self.cursor.fetchall()
