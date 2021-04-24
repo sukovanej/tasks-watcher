@@ -24,7 +24,7 @@ class ProjectRepository:
 
     def search_by_name(self, name: str) -> Sequence[Project]:
         self._repository.execute(
-            f"SELECT {ALL_PROJECT_COLUMNS} FROM projects WHERE INSTR(p.name, ?) > 0",
+            f"SELECT {ALL_PROJECT_COLUMNS} FROM projects p WHERE INSTR(p.name, ?) > 0",
             (name,),
         )
         return self._repository.fetchall_using_model(Project)

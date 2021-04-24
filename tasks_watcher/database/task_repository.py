@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, Sequence
 
 from ..models import Task
@@ -29,17 +30,18 @@ class TaskRepository:
         self._repository.commit()
 
     def search_by_name(self, name: str) -> Sequence[Task]:
-        self._repository.execute(
-            f"""
-            {BASE_QUERY}
-            WHERE INSTR(t.name, ?) > 0
-            """,
-            (name,),
-        )
+        self._repository.execute(f"{BASE_QUERY} WHERE INSTR(t.name, ?) > 0;", (name,))
         return self._repository.fetchall_using_model(Task)
 
     def delete(self, task_id: int) -> None:
         self._repository.execute("DELETE FROM tasks WHERE id = ?;", (task_id,))
+        self._repository.commit()
+
+    def finish(self, task_id: int) -> None:
+        self._repository.execute(
+            "UPDATE tasks SET finished_at = ? WHERE id = ?;",
+            (datetime.now(), task_id),
+        )
         self._repository.commit()
 
     def update(

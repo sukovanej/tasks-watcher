@@ -57,7 +57,9 @@ def timeline(events: Sequence[Event]) -> None:
         time_str = get_time_range_str(event).ljust(14)
         color = typer.colors.WHITE
 
-        if event.task != BREAK_TASK:
+        if event.task.finished_at is not None:
+            color = typer.colors.GREEN
+        elif event.task != BREAK_TASK:
             color = typer.colors.YELLOW
 
         task_str = typer.style(event.task.name, fg=color)
