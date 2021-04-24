@@ -22,4 +22,4 @@ def add(name: str):
 @categories_app.command(help="Delete a category")
 def delete(id: int = typer.Option("Task", autocompletion=complete_category_name)):
     category_repository.delete(id)
-    typer.echo(f"Done")
+    typer.echo("Done")

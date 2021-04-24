@@ -1,9 +1,9 @@
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import typer
 
 from .common import complete_category_name, complete_task_name
-from .database import category_repository, task_repository
+from .database import task_repository
 
 tasks_app = typer.Typer()
 
@@ -28,4 +28,4 @@ def add(
 @tasks_app.command(help="Delete a task")
 def delete(id: int = typer.Option("Task", autocompletion=complete_task_name)):
     task_repository.delete(id)
-    typer.echo(f"Done")
+    typer.echo("Done")

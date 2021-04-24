@@ -6,3 +6,4 @@ fix:
 
 check:
 	mypy tasks_watcher/
+	pylint tasks_watcher/

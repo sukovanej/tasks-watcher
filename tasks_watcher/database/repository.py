@@ -2,11 +2,9 @@ from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
-from typing import Iterable, List, Optional, Protocol, Sequence, Type, TypeVar
+from typing import Iterable, List, Optional, Type, TypeVar
 
-from pydantic import BaseModel
-
-from ..models import Category, Task, Event
+from ..models import Category, Event, Task
 
 T = TypeVar("T", Category, Task, Event)
 

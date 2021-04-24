@@ -28,7 +28,8 @@ class TaskRepository:
     def search_by_name(self, name: str) -> Sequence[Task]:
         self._repository.execute(
             """
-            SELECT t.id, t.created_at, t.name, t.description, c.id, c.created_at, c.name FROM tasks t 
+            SELECT t.id, t.created_at, t.name, t.description, c.id, c.created_at,
+                c.name FROM tasks t
             JOIN categories c
             WHERE INSTR(t.name, ?) > 0
             """,

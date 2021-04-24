@@ -34,10 +34,10 @@ def get_row_from(event: Event) -> Sequence[str]:
     return [status_str, event.task.name, time_str]
 
 
-def print_report(events: Sequence[Event]) -> None:
+def print_report(all_events: Sequence[Event]) -> None:
     events_per_task = defaultdict(list)
 
-    for event in events:
+    for event in all_events:
         events_per_task[event.task.id].append(event)
 
     table = []
