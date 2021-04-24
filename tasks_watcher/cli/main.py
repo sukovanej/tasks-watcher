@@ -57,7 +57,14 @@ def report() -> None:
 @app.command(help="Print tasks from yesterday")
 def standup() -> None:
     events = event_repository.list_yesterday()
-    print_report(events)
+    task_names = {
+        typer.style(e.task.name, fg=typer.colors.YELLOW, bold=True) for e in events
+    }
+    if task_names:
+        tasks_str = ", ".join(sorted(task_names))
+        typer.echo(f"Yesterday you worked on {tasks_str}")
+    else:
+        typer.echo("There is nothing from yesterday. Were you even working? :(")
 
 
 def entrypoint():
