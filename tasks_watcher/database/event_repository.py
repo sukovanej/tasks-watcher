@@ -4,7 +4,6 @@ from typing import List, Optional
 from ..models import Event
 from .repository import Repository
 
-
 BASE_QUERY = """
     SELECT e.id, e.created_at, e.started_at, e.stopped_at, t.id, t.created_at,
         t.name, t.description, c.id, c.created_at, c.name

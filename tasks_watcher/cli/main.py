@@ -1,36 +1,66 @@
-from datetime import datetime
+from collections import defaultdict
+from datetime import datetime, timedelta
+from typing import List
 
 import typer
 
-from ..time_diff import time_diff
 from ..models import Event
+from ..time_diff import time_diff, time_diff_to_str
+from .aligned import print_aligned
 from .cateogries import categories_app
 from .common import complete_task_name
 from .database import event_repository, repository
 from .tasks import tasks_app
-from .aligned import print_aligned
 
 app = typer.Typer()
 app.add_typer(categories_app, name="categories")
 app.add_typer(tasks_app, name="tasks")
 
 
-def get_row_from(event: Event) -> None:
-    task = event.task
+def get_status_str(event: Event) -> str:
     is_finished = event.stopped_at is not None
 
-    time_diff_str = time_diff(event.started_at, event.stopped_at or datetime.now())
-
     if is_finished:
-        time_str = f"took {time_diff_str}"
         status_str = typer.style("Done", fg=typer.colors.GREEN, bold=True)
     else:
-        time_str = f"started {time_diff_str} ago"
         status_str = typer.style("In progress", fg=typer.colors.WHITE, bold=True)
 
-    status_str = f"[{status_str.rjust(11)}]"
+    return f"[{status_str.rjust(11)}]"
 
-    return [status_str, task.name, time_str]
+
+def get_row_from(event: Event) -> None:
+    time_diff_str = time_diff(event.started_at, event.stopped_at or datetime.now())
+    time_diff_str = typer.style(time_diff_str, fg=typer.colors.YELLOW, bold=True)
+    status_str = get_status_str(event)
+
+    is_finished = event.stopped_at is not None
+    if is_finished:
+        time_str = f"took {time_diff_str}"
+    else:
+        time_str = f"started {time_diff_str} ago"
+
+    return [status_str, event.task.name, time_str]
+
+
+def print_report(events: List[Event]) -> None:
+    events_per_task = defaultdict(list)
+
+    for event in events:
+        events_per_task[event.task.id].append(event)
+
+    table = []
+
+    for events in events_per_task.values():
+        total_time = timedelta()
+
+        for event in events:
+            total_time += (event.stopped_at or datetime.now()) - event.started_at
+
+        status_str = get_status_str(events[0])
+        time_str = time_diff_to_str(total_time)
+        table.append([status_str, events[0].task.name, time_str])
+
+    print_aligned(table)
 
 
 @app.command()
@@ -59,7 +89,7 @@ def show() -> None:
     if active_event is None:
         typer.echo(f"no active task, you lazy pig")
     else:
-        print_event(active_event)
+        typer.echo(" ".join(get_row_from(active_event)))
 
 
 @app.command()
@@ -72,8 +102,7 @@ def events() -> None:
 @app.command()
 def report() -> None:
     events = event_repository.list_today()
-    table = [get_row_from(e) for e in events]
-    print_aligned(table)
+    print_report(events)
 
 
 def entrypoint():
