@@ -24,9 +24,9 @@ DESCRIPTION_TYPER_OPTION = typer.Option(None, help="Task description")
 
 
 @tasks_app.command(help="List all the tasks")
-def list():
+def list(full: bool = False):
     tasks = task_repository.list_all()
-    print_tasks(tasks)
+    print_tasks(tasks, full)
 
 
 @tasks_app.command(help="Add a new task")
