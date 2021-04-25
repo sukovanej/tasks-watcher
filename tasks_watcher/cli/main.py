@@ -1,7 +1,6 @@
 import typer
 
-from .common import (complete_task_name, complete_unfinished_task_name,
-                     task_repository)
+from .common import complete_task_name, complete_unfinished_task_name, task_repository
 from .database import event_repository, repository
 from .projects import projects_app
 from .tasks import tasks_app
@@ -66,6 +65,10 @@ def events() -> None:
 @app.command(help="Show how you're doing today")
 def report() -> None:
     all_events = event_repository.list_today()
+
+    if len(all_events) == 0:
+        typer.echo("Nothing reported today yet :(")
+        typer.Exit()
 
     typer.secho("Tasks", bold=True, fg=typer.colors.BRIGHT_CYAN)
     typer.secho("-" * 30 + "\n", bold=True, fg=typer.colors.BRIGHT_CYAN)
