@@ -7,3 +7,5 @@ fix:
 check:
 	mypy tasks_watcher/
 	pylint tasks_watcher/
+	black --check tasks_watcher/
+	isort --check tasks_watcher/
