@@ -1,5 +1,7 @@
+[MASTER]
+extension-pkg-whitelist=pydantic
+
 [MESSAGES CONTROL]
 #enable=
 
-disable=W0622,C0103,C0113,C0114,C0115,C0116,R1705
-
+disable=W0622,C0103,C0113,C0114,C0115,C0116,R1705,R0903
