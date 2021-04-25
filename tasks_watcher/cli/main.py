@@ -63,7 +63,7 @@ def report() -> None:
 
     if len(all_events) == 0:
         typer.echo("Nothing reported today yet :(")
-        typer.Exit()
+        raise typer.Exit()
 
     typer.secho("Tasks", bold=True, fg=typer.colors.BRIGHT_CYAN)
     typer.secho("-" * 30 + "\n", bold=True, fg=typer.colors.BRIGHT_CYAN)

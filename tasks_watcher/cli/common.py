@@ -32,10 +32,10 @@ def search_task_or_fail(task: str) -> Task:
         for task_sql in tasks:
             typer.echo(f" - {task_sql.name}")
 
-        typer.Exit()
+        raise typer.Exit()
     elif len(tasks) == 0:
         typer.echo("No task found")
-        typer.Exit()
+        raise typer.Exit()
 
     return tasks[0]
 
@@ -48,9 +48,9 @@ def search_project_or_fail(project: str) -> Project:
         for project_sql in projects:
             typer.echo(f" - {project_sql.name}")
 
-        typer.Exit()
+        raise typer.Exit()
     elif len(projects) == 0:
         typer.echo("No task found")
-        typer.Exit()
+        raise typer.Exit()
 
     return projects[0]
