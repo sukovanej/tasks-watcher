@@ -52,9 +52,11 @@ def add(
 @tasks_app.command(help="Update an existing task")
 def update(
     name: str = TASK_NAME_TYPER_OPTION,
-    new_name: Optional[str] = None,
-    new_project: Optional[str] = PROJECT_NAME_TYPER_OPTION,
-    new_description: Optional[str] = DESCRIPTION_TYPER_OPTION,
+    new_name: Optional[str] = typer.Option(None, help="Change the name"),
+    new_project: Optional[str] = typer.Option(
+        None, autocompletion=complete_project_name, help="Assign to a different project"
+    ),
+    new_description: Optional[str] = typer.Option(None, help="Modify the description"),
 ) -> None:
     new_project_id = None
 
