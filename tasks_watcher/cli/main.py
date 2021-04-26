@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import typer
 
 from .common import (
@@ -27,6 +29,20 @@ def init() -> None:
 @app.command(help="Start working on a task")
 def start(task: str = typer.Option("Task", autocompletion=complete_task_name)) -> None:
     task_sql = search_task_or_fail(task)
+
+    last_event = event_repository.get_last()
+
+    if last_event is not None:
+        stopped_at = last_event.stopped_at or datetime.now()
+        last_event_duration = stopped_at - last_event.started_at
+
+        if last_event_duration < timedelta(minutes=1):
+            delete_last_event = typer.confirm(
+                "The previous event took less then 1min, I can delete it, huh?"
+            )
+
+            if delete_last_event:
+                event_repository.delete(last_event.id)
 
     event_repository.stop()
     event_repository.start(task_sql.id)

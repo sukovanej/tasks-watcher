@@ -24,15 +24,32 @@ def complete_unfinished_task_name(incomplete: str) -> List[Tuple[str, str]]:
     return project_names
 
 
+def check_int_input_in_range(input_str: str, start: int, end: int) -> int:
+    if not input_str.isdigit():
+        typer.echo("I expected integer value :(")
+        raise typer.Exit(1)
+
+    value_int = int(input_str)
+
+    if value_int > end or value_int < start:
+        typer.echo(f"Please choose a value in range {start} - {end}")
+        raise typer.Exit(1)
+
+    return value_int
+
+
 def search_task_or_fail(task: str) -> Task:
     tasks = task_repository.search_by_name(task)
 
     if len(tasks) > 1:
         typer.echo("There are multiple such tasks:")
-        for task_sql in tasks:
-            typer.echo(f" - {task_sql.name}")
+        for id, task_sql in enumerate(tasks):
+            typer.echo(f" [{id + 1}] {task_sql.name}")
 
-        raise typer.Exit()
+        task_id_str = typer.prompt("What task do you mean?")
+        task_id = check_int_input_in_range(task_id_str, 1, len(tasks))
+        return tasks[task_id - 1]
+
     elif len(tasks) == 0:
         typer.echo("No task found")
         raise typer.Exit()

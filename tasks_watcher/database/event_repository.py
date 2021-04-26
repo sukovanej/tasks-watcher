@@ -24,6 +24,14 @@ class EventRepository:
         self._repository.execute(f"{BASE_QUERY};")
         return self._repository.fetchall_using_model(Event)
 
+    def get_last(self) -> Optional[Event]:
+        self._repository.execute(f"{BASE_QUERY} ORDER BY e.created_at DESC LIMIT 1;")
+        return self._repository.fetch_using_model(Event)
+
+    def delete(self, event_id: int) -> None:
+        self._repository.execute("DELETE FROM events WHERE id = ?;", (event_id,))
+        self._repository.commit()
+
     def get_active(self) -> Optional[Event]:
         self._repository.execute(
             f"""
