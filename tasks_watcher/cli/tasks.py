@@ -24,11 +24,17 @@ DESCRIPTION_TYPER_OPTION = typer.Option(None, help="Task description")
 
 
 @tasks_app.command(help="List all the tasks")
-def list(full: bool = False, unfinished: bool = False) -> None:
+def list(
+    full: bool = False,
+    unfinished: bool = False,
+    project: Optional[str] = typer.Option(
+        None, autocompletion=complete_project_name, help="Project name"
+    ),
+) -> None:
     if unfinished:
-        tasks = task_repository.list_all_unfinished()
+        tasks = task_repository.list_all_unfinished(project)
     else:
-        tasks = task_repository.list_all()
+        tasks = task_repository.list_all(project)
     print_tasks(tasks, full)
 
 

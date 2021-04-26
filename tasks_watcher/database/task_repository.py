@@ -18,12 +18,28 @@ class TaskRepository:
     def __init__(self, repository: Repository) -> None:
         self._repository = repository
 
-    def list_all(self) -> Sequence[Task]:
-        self._repository.execute(f"{BASE_QUERY};")
+    def list_all(self, project: Optional[str] = None) -> Sequence[Task]:
+        where_query = ""
+        if project is not None:
+            where_query = "WHERE p.name = ?"
+
+        all_parameters = [project]
+        parameters = tuple(p for p in all_parameters if p is not None)
+
+        self._repository.execute(f"{BASE_QUERY} {where_query};", parameters)
         return self._repository.fetchall_using_model(Task)
 
-    def list_all_unfinished(self) -> Sequence[Task]:
-        self._repository.execute(f"{BASE_QUERY} WHERE t.finished_at is NULL;")
+    def list_all_unfinished(self, project: Optional[str] = None) -> Sequence[Task]:
+        where_query = ""
+        if project is not None:
+            where_query = "AND p.name = ?"
+
+        all_parameters = [project]
+        parameters = tuple(p for p in all_parameters if p is not None)
+
+        self._repository.execute(
+            f"{BASE_QUERY} WHERE t.finished_at is NULL {where_query};", parameters
+        )
         return self._repository.fetchall_using_model(Task)
 
     def add(self, name: str, project_id: int, description: Optional[str]) -> None:
